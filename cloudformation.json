@@ -1,0 +1,318 @@
+{
+    "Resources": {
+        "VPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "VPCCidrParameter"
+                }
+            }
+        },
+        "EIP": {
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc"
+            }
+        },
+        "privateNatGateway": {
+            "DependsOn": "attachGateway",
+            "Type": "AWS::EC2::NatGateway",
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "EIP",
+                        "AllocationId"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "publicSubnet"
+                }
+            }
+        },
+        "privateRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            }
+        },
+        "privateSubnetRouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "privateRouteTable"
+                },
+                "SubnetId": {
+                    "Ref": "privateSubnet"
+                }
+            }
+        },
+        "privateNatRoute": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": [
+                "privateNatGateway"
+            ],
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "privateRouteTable"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "NatGatewayId": {
+                    "Ref": "privateNatGateway"
+                }
+            }
+        },
+        "privateSubnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "privateSubnetCidrParameter"
+                },
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            }
+        },
+        "privateSubnetSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "GroupDescription": "privateSubnetSecurityGroup",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": -1,
+                        "FromPort": 0,
+                        "ToPort": 0,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "SecurityGroupEgress": [
+                    {
+                        "IpProtocol": -1,
+                        "FromPort": 0,
+                        "ToPort": 0,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        },
+        "master": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "privateSubnet"
+                },
+                "InstanceType": {
+                    "Ref": "InstanceTypeParameter"
+                },
+                "ImageId": "ami-0c6b1d09930fac512",
+                "KeyName": {
+                    "Ref": "keynameParameter"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "privateSubnetSecurityGroup"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Type",
+                        "Value": "Master"
+                    }
+                ]
+            }
+        },
+        "nodes": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "AutoScalingGroupName": "k8sNodes",
+                "InstanceId": {
+                    "Ref": "master"
+                },
+                "MaxSize": 1,
+                "MinSize": 1,
+                "AvailabilityZones": [
+                    "us-east-1a"
+                ],
+                "Tags": [
+                    {
+                        "Key": "Type",
+                        "Value": "Node",
+                        "PropagateAtLaunch": true
+                    }
+                ]
+            }
+        },
+        "internetGateway": {
+            "Type": "AWS::EC2::InternetGateway"
+        },
+        "attachGateway": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "InternetGatewayId": {
+                    "Ref": "internetGateway"
+                }
+            }
+        },
+        "publicRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            }
+        },
+        "publicSubnetRouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "publicRouteTable"
+                },
+                "SubnetId": {
+                    "Ref": "publicSubnet"
+                }
+            }
+        },
+        "publicRoute": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": [
+                "internetGateway",
+                "attachGateway"
+            ],
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "publicRouteTable"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref": "internetGateway"
+                }
+            }
+        },
+        "publicSubnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "publicSubnetCidrParameter"
+                },
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            }
+        },
+        "publicSubnetSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "GroupDescription": "publicSubnetSecurityGroup",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 22,
+                        "ToPort": 22,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "SecurityGroupEgress": [
+                    {
+                        "IpProtocol": -1,
+                        "FromPort": 0,
+                        "ToPort": 0,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        },
+        "bastion1": {
+            "Type": "AWS::EC2::Instance",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "files": {
+                            "/home/ec2-user/MyKeyPair.pem": {
+                                "content": "-----BEGIN RSA PRIVATE KEY-----\nMIIEpQIBAAKCAQEAx4PUGuycCFe0G5CIgcaTtobXBHSE7CKkAxMTi+SzMhlcjNgOCOF15vfJj+Pv\n9MoxcJ5oiKge7TunEutnahJv38lSKQp4qIEo3FmFT/6nZ6AEcEOHr/A1LYCiuD1zGAa/vPZpahFE\nhA9Yel0hU6UxENdvS2VNswMgF3iB7sdANtr+eXMV/L6OQDFC7nm4iR8wfhNHH6sEM1KZKfaptVBJ\n9tTwkkvF7iLbI9m9FxF/pkwSDunva7u5x+4DBeqsJZNPtkmBmDxcGhFqBgEb4cLNmaeKyS6yrOwi\nGvwkPqW92s+JfQPEf9e2ry2OG3CEWpMqyrW7djDPTH45zHRS3gjaiQIDAQABAoIBAQCKXe/c2FmC\nI6kCMOOq9Rf+T1eRfGmvBnsusq0sqOhqB1K7Tx+0owBMtW4xf4gsAYn2K7YdiFMifetp4J5w3uZ9\nkjaLxfpWCnVXFDKzfs2EvWI2pW7V4sZOj1bKZbuLXyrclxwWdnFJEQdwnWP+iaMUpgRGirQvQSyh\nem7KNZ9gKpiySUGMtjL2shyeG4PamkYJALQYYbd6IMvs3R7YRFKghynmeQY5kbAeAuqpofrGww26\nFI+aQYk1K3tFVF1tF/8y7//egumT9fKpgLf7twcxWKdSPotD9bndoEbdl1tdAmvVhm8BYXRY+Lo6\n9SJoNnTpaZHBlDor+yVF7EspMbVdAoGBAO9WeUkU8fsYTf8Yk+xvI/Swa6gHaktfH+XR/OPWybPp\nFccfTTbea8wCk8tsAmNvdr97FMvzHsYtQ4RqHWY4/vp+9i2s4uDGlWd7zWE/MUD/GeEhHzwtTOha\n+JaKDYkMXMqz1FlCJ24dqzqVueWfFnefdOE9QkDBuSuJx1TEljBHAoGBANVnn8zzYX4i2hf2lmtl\nwP2Xa+Zwu97U84VsnklvaeUlLzpnpqwFIdimKjBu2arVq0YOSSspE55ruhxf0YQHzHJ8/2ZhLP8J\nKVJ78bhBdahtBYdOCEGRUbOg4IAGZhshuCvtC6N/sr2hb+yHgJ6rICnw4bPjHblozeoCespIqlav\nAoGBAMsln/7bK2WQxKtQ5kXaNC++CzLtUFi3XjDJIxkUt9Hgdt6z/+shsWfRjDcu73wNIUL4KrfO\nHYHi65saIuggWrSuTTCJvW1CwY+7sqDnbVwY65N+dK+0V8IlbTkB5uk7uAtJxmUY1LUPs8YfTlHL\nzdstWpzQTUr/47dD1BBsaHqDAoGADwY6o+1GoeDGRgWgVXNWgQQWHqU1NNz9QBmDk1v6sp1Jk+0U\nOOwrk9svATXssTBV3JrI3/cGYJLpCXJdh9Qcurq+KHES/+mfNSVwwS4qoG78gqglwKgAfosHAzxw\nF9zp4H3R4fLtnJgvDxIDJiiaHRnOaiHFR/Zu+Niv2GoBRBUCgYEA23q+871uNecTKLftbap+AFu3\n+LRWAEFFQgqcobjzQCIWpm4Y+0JSsXC+eQXaDTBQtCcy+tSroGH2Gk8k9hiVKEPIfbDduFyU2Ea/\n5qONRND0O3ulceJ+GEQSMuHlU6geUpFgXJBCobYpbF1GKM/jawhGut1r4ugZVxj+34pOwiA=\n-----END RSA PRIVATE KEY-----\n",
+                                "mode": 400,
+                                "owner": "ec2-user",
+                                "group": "ec2-user"
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties": {
+                "InstanceType": {
+                    "Ref": "InstanceTypeParameter"
+                },
+                "ImageId": "ami-0c6b1d09930fac512",
+                "KeyName": {
+                    "Ref": "keynameParameter"
+                },
+                "NetworkInterfaces": [
+                    {
+                        "AssociatePublicIpAddress": true,
+                        "DeviceIndex": 0,
+                        "GroupSet": [
+                            {
+                                "Ref": "publicSubnetSecurityGroup"
+                            }
+                        ],
+                        "SubnetId": {
+                            "Ref": "publicSubnet"
+                        }
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Type",
+                        "Value": "Bastion"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Sub": "#!/bin/bash -xe\nyum update -y aws-cfn-bootstrap\n/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}\n/opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}\n"
+                    }
+                }
+            }
+        }
+    },
+    "Parameters": {
+        "InstanceTypeParameter": {
+            "Type": "String",
+            "Default": "t2.micro",
+            "AllowedValues": [
+                "t2.micro",
+                "m1.small",
+                "m1.large"
+            ],
+            "Description": "Enter t2.micro, m1.small, or m1.large. Default is t2.micro."
+        },
+        "VPCCidrParameter": {
+            "Type": "String",
+            "Default": "10.0.0.0/16",
+            "Description": "VPC CIDR"
+        },
+        "privateSubnetCidrParameter": {
+            "Type": "String",
+            "Default": "10.0.1.0/24",
+            "Description": "Private Subnet CIDR"
+        },
+        "publicSubnetCidrParameter": {
+            "Type": "String",
+            "Default": "10.0.0.0/24",
+            "Description": "Public Subnet CIDR"
+        },
+        "keynameParameter": {
+            "Type": "String",
+            "Default": "MyKeyPair",
+            "Description": "Keyname"
+        }
+    }
+}

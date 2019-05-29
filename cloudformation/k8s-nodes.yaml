@@ -1,0 +1,26 @@
+Resources:
+  master:
+    Type: AWS::EC2::Instance
+    Properties:
+      SubnetId: !Ref privateSubnet
+      InstanceType: !Ref InstanceTypeParameter
+      ImageId: "ami-0c6b1d09930fac512"
+      KeyName: !Ref keynameParameter
+      SecurityGroupIds:
+        - !Ref privateSubnetSecurityGroup
+      Tags:
+        - Key: Type
+          Value: Master
+  nodes:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: k8sNodes
+      InstanceId: !Ref master
+      MaxSize: !Ref k8sNodeSizeParameter
+      MinSize: 1
+      AvailabilityZones:
+        - us-east-1a
+      Tags:
+        - Key: Type
+          Value: Node
+          PropagateAtLaunch: true

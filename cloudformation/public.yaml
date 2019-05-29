@@ -1,0 +1,99 @@
+Resources:
+  internetGateway:
+    Type: AWS::EC2::InternetGateway
+  attachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref internetGateway
+  publicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+  publicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref publicRouteTable
+      SubnetId: !Ref publicSubnet
+  publicRoute:
+    Type: AWS::EC2::Route
+    DependsOn:
+      - internetGateway
+      - attachGateway
+    Properties:
+      RouteTableId: !Ref publicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref internetGateway
+  publicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: !Ref publicSubnetCidrParameter
+      VpcId: !Ref VPC
+  publicSubnetSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VPC
+      GroupDescription: publicSubnetSecurityGroup
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: "0.0.0.0/0"
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: 0
+          ToPort: 0
+          CidrIp: "0.0.0.0/0"
+  bastion1:
+    Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          files:
+            /home/ec2-user/MyKeyPair.pem:
+              content: |
+                -----BEGIN RSA PRIVATE KEY-----
+                MIIEpQIBAAKCAQEAx4PUGuycCFe0G5CIgcaTtobXBHSE7CKkAxMTi+SzMhlcjNgOCOF15vfJj+Pv
+                9MoxcJ5oiKge7TunEutnahJv38lSKQp4qIEo3FmFT/6nZ6AEcEOHr/A1LYCiuD1zGAa/vPZpahFE
+                hA9Yel0hU6UxENdvS2VNswMgF3iB7sdANtr+eXMV/L6OQDFC7nm4iR8wfhNHH6sEM1KZKfaptVBJ
+                9tTwkkvF7iLbI9m9FxF/pkwSDunva7u5x+4DBeqsJZNPtkmBmDxcGhFqBgEb4cLNmaeKyS6yrOwi
+                GvwkPqW92s+JfQPEf9e2ry2OG3CEWpMqyrW7djDPTH45zHRS3gjaiQIDAQABAoIBAQCKXe/c2FmC
+                I6kCMOOq9Rf+T1eRfGmvBnsusq0sqOhqB1K7Tx+0owBMtW4xf4gsAYn2K7YdiFMifetp4J5w3uZ9
+                kjaLxfpWCnVXFDKzfs2EvWI2pW7V4sZOj1bKZbuLXyrclxwWdnFJEQdwnWP+iaMUpgRGirQvQSyh
+                em7KNZ9gKpiySUGMtjL2shyeG4PamkYJALQYYbd6IMvs3R7YRFKghynmeQY5kbAeAuqpofrGww26
+                FI+aQYk1K3tFVF1tF/8y7//egumT9fKpgLf7twcxWKdSPotD9bndoEbdl1tdAmvVhm8BYXRY+Lo6
+                9SJoNnTpaZHBlDor+yVF7EspMbVdAoGBAO9WeUkU8fsYTf8Yk+xvI/Swa6gHaktfH+XR/OPWybPp
+                FccfTTbea8wCk8tsAmNvdr97FMvzHsYtQ4RqHWY4/vp+9i2s4uDGlWd7zWE/MUD/GeEhHzwtTOha
+                +JaKDYkMXMqz1FlCJ24dqzqVueWfFnefdOE9QkDBuSuJx1TEljBHAoGBANVnn8zzYX4i2hf2lmtl
+                wP2Xa+Zwu97U84VsnklvaeUlLzpnpqwFIdimKjBu2arVq0YOSSspE55ruhxf0YQHzHJ8/2ZhLP8J
+                KVJ78bhBdahtBYdOCEGRUbOg4IAGZhshuCvtC6N/sr2hb+yHgJ6rICnw4bPjHblozeoCespIqlav
+                AoGBAMsln/7bK2WQxKtQ5kXaNC++CzLtUFi3XjDJIxkUt9Hgdt6z/+shsWfRjDcu73wNIUL4KrfO
+                HYHi65saIuggWrSuTTCJvW1CwY+7sqDnbVwY65N+dK+0V8IlbTkB5uk7uAtJxmUY1LUPs8YfTlHL
+                zdstWpzQTUr/47dD1BBsaHqDAoGADwY6o+1GoeDGRgWgVXNWgQQWHqU1NNz9QBmDk1v6sp1Jk+0U
+                OOwrk9svATXssTBV3JrI3/cGYJLpCXJdh9Qcurq+KHES/+mfNSVwwS4qoG78gqglwKgAfosHAzxw
+                F9zp4H3R4fLtnJgvDxIDJiiaHRnOaiHFR/Zu+Niv2GoBRBUCgYEA23q+871uNecTKLftbap+AFu3
+                +LRWAEFFQgqcobjzQCIWpm4Y+0JSsXC+eQXaDTBQtCcy+tSroGH2Gk8k9hiVKEPIfbDduFyU2Ea/
+                5qONRND0O3ulceJ+GEQSMuHlU6geUpFgXJBCobYpbF1GKM/jawhGut1r4ugZVxj+34pOwiA=
+                -----END RSA PRIVATE KEY-----
+              mode: 400
+              owner: "ec2-user"
+              group: "ec2-user"
+    Properties:
+      InstanceType: !Ref InstanceTypeParameter
+      ImageId: "ami-0c6b1d09930fac512"
+      KeyName: !Ref keynameParameter
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          GroupSet: [!Ref publicSubnetSecurityGroup]
+          SubnetId: !Ref publicSubnet
+      Tags:
+        - Key: Type
+          Value: Bastion
+      UserData:
+        Fn::Base64:
+          !Sub |
+          #!/bin/bash -xe
+          yum update -y aws-cfn-bootstrap
+          /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}

@@ -1,0 +1,9 @@
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPCCidrParameter
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
