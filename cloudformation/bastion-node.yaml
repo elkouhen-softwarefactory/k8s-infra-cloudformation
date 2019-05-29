@@ -1,54 +1,13 @@
 Resources:
-  internetGateway:
-    Type: AWS::EC2::InternetGateway
-  attachGateway:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref VPC
-      InternetGatewayId: !Ref internetGateway
-  publicRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-  publicSubnetRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref publicRouteTable
-      SubnetId: !Ref publicSubnet
-  publicRoute:
-    Type: AWS::EC2::Route
-    DependsOn:
-      - internetGateway
-      - attachGateway
-    Properties:
-      RouteTableId: !Ref publicRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref internetGateway
-  publicSubnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      CidrBlock: !Ref publicSubnetCidrParameter
-      VpcId: !Ref VPC
-  publicSubnetSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      VpcId: !Ref VPC
-      GroupDescription: publicSubnetSecurityGroup
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: "0.0.0.0/0"
-      SecurityGroupEgress:
-        - IpProtocol: -1
-          FromPort: 0
-          ToPort: 0
-          CidrIp: "0.0.0.0/0"
   bastion1:
     Type: AWS::EC2::Instance
     Metadata:
       AWS::CloudFormation::Init:
         config:
+          packages:
+            yum:
+              - python-pip: []
+              - git: []
           files:
             /home/ec2-user/MyKeyPair.pem:
               content: |
@@ -95,5 +54,7 @@ Resources:
           !Sub |
           #!/bin/bash -xe
           yum update -y aws-cfn-bootstrap
+          pip install ansible boto boto3 botocore
+          git clone https://github.com/SofteamOuest-SoftwareFactory/software-factory.git
           /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}
           /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}

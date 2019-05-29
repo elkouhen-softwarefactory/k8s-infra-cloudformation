@@ -16,12 +16,16 @@ module.exports = {
 			// Capabilities: ['CAPABILITY_IAM'],
 
 			/* uncomment if your CloudFormation require parameters */
-			// Parameters: [
-			// 	{
-			// 		ParameterKey: 'my-parameter',
-			// 		ParameterValue: 'my-value',
-			// 	},
-			// ],
+			Parameters: [
+				{
+					ParameterKey: 'k8sMinNodeSizeParameter',
+					ParameterValue: "1",
+				},
+				{
+					ParameterKey: 'k8sMaxNodeSizeParameter',
+					ParameterValue: "1",
+				}
+			],
 		},
 		/* uncomment if you need to upload artifacts before creating/updating your stack */
 		// artifacts: [

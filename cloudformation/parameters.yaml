@@ -23,7 +23,11 @@ Parameters:
     Type: String
     Default: MyKeyPair
     Description: Keyname
-  k8sNodeSizeParameter:
-    Type: number
-    Default: 1
+  k8sMinNodeSizeParameter:
+    Type: Number
+    Default: "0"
+    Description: Number Of Nodes
+  k8sMaxNodeSizeParameter:
+    Type: Number
+    Default: "1"
     Description: Number Of Nodes

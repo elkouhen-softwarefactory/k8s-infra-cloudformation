@@ -14,12 +14,10 @@ Resources:
   nodes:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
-      AutoScalingGroupName: k8sNodes
       InstanceId: !Ref master
-      MaxSize: !Ref k8sNodeSizeParameter
-      MinSize: 1
-      AvailabilityZones:
-        - us-east-1a
+      MinSize: !Ref k8sMinNodeSizeParameter
+      MaxSize: !Ref k8sMaxNodeSizeParameter
+      VPCZoneIdentifier: [!Ref privateSubnet]
       Tags:
         - Key: Type
           Value: Node
