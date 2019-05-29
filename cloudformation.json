@@ -1,20 +1,10 @@
 {
     "Resources": {
-        "bastion1": {
+        "bastion": {
             "Type": "AWS::EC2::Instance",
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": [
-                                {
-                                    "python-pip": []
-                                },
-                                {
-                                    "git": []
-                                }
-                            ]
-                        },
                         "files": {
                             "/home/ec2-user/MyKeyPair.pem": {
                                 "content": "-----BEGIN RSA PRIVATE KEY-----\nMIIEpQIBAAKCAQEAx4PUGuycCFe0G5CIgcaTtobXBHSE7CKkAxMTi+SzMhlcjNgOCOF15vfJj+Pv\n9MoxcJ5oiKge7TunEutnahJv38lSKQp4qIEo3FmFT/6nZ6AEcEOHr/A1LYCiuD1zGAa/vPZpahFE\nhA9Yel0hU6UxENdvS2VNswMgF3iB7sdANtr+eXMV/L6OQDFC7nm4iR8wfhNHH6sEM1KZKfaptVBJ\n9tTwkkvF7iLbI9m9FxF/pkwSDunva7u5x+4DBeqsJZNPtkmBmDxcGhFqBgEb4cLNmaeKyS6yrOwi\nGvwkPqW92s+JfQPEf9e2ry2OG3CEWpMqyrW7djDPTH45zHRS3gjaiQIDAQABAoIBAQCKXe/c2FmC\nI6kCMOOq9Rf+T1eRfGmvBnsusq0sqOhqB1K7Tx+0owBMtW4xf4gsAYn2K7YdiFMifetp4J5w3uZ9\nkjaLxfpWCnVXFDKzfs2EvWI2pW7V4sZOj1bKZbuLXyrclxwWdnFJEQdwnWP+iaMUpgRGirQvQSyh\nem7KNZ9gKpiySUGMtjL2shyeG4PamkYJALQYYbd6IMvs3R7YRFKghynmeQY5kbAeAuqpofrGww26\nFI+aQYk1K3tFVF1tF/8y7//egumT9fKpgLf7twcxWKdSPotD9bndoEbdl1tdAmvVhm8BYXRY+Lo6\n9SJoNnTpaZHBlDor+yVF7EspMbVdAoGBAO9WeUkU8fsYTf8Yk+xvI/Swa6gHaktfH+XR/OPWybPp\nFccfTTbea8wCk8tsAmNvdr97FMvzHsYtQ4RqHWY4/vp+9i2s4uDGlWd7zWE/MUD/GeEhHzwtTOha\n+JaKDYkMXMqz1FlCJ24dqzqVueWfFnefdOE9QkDBuSuJx1TEljBHAoGBANVnn8zzYX4i2hf2lmtl\nwP2Xa+Zwu97U84VsnklvaeUlLzpnpqwFIdimKjBu2arVq0YOSSspE55ruhxf0YQHzHJ8/2ZhLP8J\nKVJ78bhBdahtBYdOCEGRUbOg4IAGZhshuCvtC6N/sr2hb+yHgJ6rICnw4bPjHblozeoCespIqlav\nAoGBAMsln/7bK2WQxKtQ5kXaNC++CzLtUFi3XjDJIxkUt9Hgdt6z/+shsWfRjDcu73wNIUL4KrfO\nHYHi65saIuggWrSuTTCJvW1CwY+7sqDnbVwY65N+dK+0V8IlbTkB5uk7uAtJxmUY1LUPs8YfTlHL\nzdstWpzQTUr/47dD1BBsaHqDAoGADwY6o+1GoeDGRgWgVXNWgQQWHqU1NNz9QBmDk1v6sp1Jk+0U\nOOwrk9svATXssTBV3JrI3/cGYJLpCXJdh9Qcurq+KHES/+mfNSVwwS4qoG78gqglwKgAfosHAzxw\nF9zp4H3R4fLtnJgvDxIDJiiaHRnOaiHFR/Zu+Niv2GoBRBUCgYEA23q+871uNecTKLftbap+AFu3\n+LRWAEFFQgqcobjzQCIWpm4Y+0JSsXC+eQXaDTBQtCcy+tSroGH2Gk8k9hiVKEPIfbDduFyU2Ea/\n5qONRND0O3ulceJ+GEQSMuHlU6geUpFgXJBCobYpbF1GKM/jawhGut1r4ugZVxj+34pOwiA=\n-----END RSA PRIVATE KEY-----\n",
@@ -56,7 +46,7 @@
                 ],
                 "UserData": {
                     "Fn::Base64": {
-                        "Fn::Sub": "#!/bin/bash -xe\nyum update -y aws-cfn-bootstrap\nsudo pip install ansible boto boto3 botocore\ngit clone https://github.com/SofteamOuest-SoftwareFactory/software-factory.git\n/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}\n/opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}\n"
+                        "Fn::Sub": "#!/bin/bash -xe\nyum update -y aws-cfn-bootstrap\nyum install -y python-pip git\npip install ansible boto boto3 botocore\ngit clone https://github.com/elkouhen/k8s-deploy.git /home/ec2-user/k8s-deploy\n/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}\n/opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}\n"
                     }
                 }
             }
