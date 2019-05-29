@@ -9,7 +9,7 @@ Resources:
       SecurityGroupIds:
         - !Ref privateSubnetSecurityGroup
       Tags:
-        - Key: Type
+        - Key: Name
           Value: Master
   nodes:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -19,6 +19,6 @@ Resources:
       MaxSize: !Ref k8sMaxNodeSizeParameter
       VPCZoneIdentifier: [!Ref privateSubnet]
       Tags:
-        - Key: Type
+        - Key: Name
           Value: Node
           PropagateAtLaunch: true
