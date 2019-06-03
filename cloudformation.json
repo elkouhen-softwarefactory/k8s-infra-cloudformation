@@ -1,6 +1,6 @@
 {
     "Resources": {
-        "bastion": {
+        "bastion0": {
             "Type": "AWS::EC2::Instance",
             "Metadata": {
                 "AWS::CloudFormation::Init": {
@@ -46,7 +46,7 @@
                 ],
                 "UserData": {
                     "Fn::Base64": {
-                        "Fn::Sub": "#!/bin/bash -xe\nyum update -y aws-cfn-bootstrap\nyum install -y python-pip git\npip install ansible boto boto3 botocore\ngit clone https://github.com/elkouhen/k8s-deploy.git /home/ec2-user/k8s-deploy\n/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}\n/opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}\n"
+                        "Fn::Sub": "#!/bin/bash -xe\nyum update -y aws-cfn-bootstrap\nyum install -y python-pip git\npip install ansible boto boto3 botocore\ngit clone https://github.com/elkouhen/k8s-deploy.git /home/ec2-user/k8s-deploy\nchmod -R ec2-user /home/ec2-user/k8s-deploy\n/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}\n/opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}\n"
                     }
                 }
             }
@@ -85,7 +85,7 @@
                 ],
                 "Tags": [
                     {
-                        "Key": "Type",
+                        "Key": "Name",
                         "Value": "Master"
                     }
                 ]
@@ -110,7 +110,7 @@
                 ],
                 "Tags": [
                     {
-                        "Key": "Type",
+                        "Key": "Name",
                         "Value": "Node",
                         "PropagateAtLaunch": true
                     }
