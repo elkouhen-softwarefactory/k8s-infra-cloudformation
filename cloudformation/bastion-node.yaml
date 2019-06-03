@@ -1,5 +1,5 @@
 Resources:
-  bastion0:
+  bastion:
     Type: AWS::EC2::Instance
     Metadata:
       AWS::CloudFormation::Init:
@@ -52,7 +52,7 @@ Resources:
           yum update -y aws-cfn-bootstrap
           yum install -y python-pip git
           pip install ansible boto boto3 botocore
-          git clone https://github.com/elkouhen/k8s-deploy.git /home/ec2-user/k8s-deploy
+          git clone https://gitlab.ippon.fr/melkouhen/k8s-infra-cfn.git /home/ec2-user/k8s-deploy
           chmod -R ec2-user /home/ec2-user/k8s-deploy
           /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}
           /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}
