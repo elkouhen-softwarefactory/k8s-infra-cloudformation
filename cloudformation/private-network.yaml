@@ -30,6 +30,9 @@ Resources:
     Properties:
       CidrBlock: !Ref privateSubnetCidrParameter
       VpcId: !Ref VPC
+      Tags:
+        - Key: kubernetes.io/cluster/mycluster
+          Value: mycluster
   privateSubnetSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:

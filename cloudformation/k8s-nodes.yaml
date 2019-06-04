@@ -19,6 +19,8 @@ Resources:
       Tags:
         - Key: Name
           Value: Master
+        - Key: kubernetes.io/cluster/mycluster
+          Value: mycluster
   nodes:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
