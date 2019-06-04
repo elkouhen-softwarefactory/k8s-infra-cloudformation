@@ -40,13 +40,13 @@
                 ],
                 "Tags": [
                     {
-                        "Key": "Type",
+                        "Key": "Name",
                         "Value": "Bastion"
                     }
                 ],
                 "UserData": {
                     "Fn::Base64": {
-                        "Fn::Sub": "#!/bin/bash -xe\nyum update -y aws-cfn-bootstrap\nyum install -y python-pip git\npip install ansible boto boto3 botocore\ngit clone https://gitlab.ippon.fr/melkouhen/k8s-infra-cfn.git /home/ec2-user/k8s-deploy\nchmod -R ec2-user /home/ec2-user/k8s-deploy\n/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}\n/opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion1 --region ${AWS::Region}\n"
+                        "Fn::Sub": "#!/bin/bash -xe\nyum update -y aws-cfn-bootstrap\nyum install -y python-pip git\npip install ansible boto boto3 botocore\ngit clone git@github.com:elkouhen/k8s-deploy.git /home/ec2-user/k8s-deploy\nchmod -R ec2-user /home/ec2-user/k8s-deploy\n/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion --region ${AWS::Region}\n/opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion --region ${AWS::Region}\n"
                     }
                 }
             }
@@ -65,6 +65,15 @@
                 "Domain": "vpc"
             }
         },
+        "InstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [
+                    "k8s"
+                ]
+            }
+        },
         "master": {
             "Type": "AWS::EC2::Instance",
             "Properties": {
@@ -77,6 +86,9 @@
                 "ImageId": "ami-0c6b1d09930fac512",
                 "KeyName": {
                     "Ref": "keynameParameter"
+                },
+                "IamInstanceProfile": {
+                    "Ref": "InstanceProfile"
                 },
                 "SecurityGroupIds": [
                     {

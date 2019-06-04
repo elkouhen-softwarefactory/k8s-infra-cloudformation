@@ -1,4 +1,11 @@
 Resources:
+  InstanceProfile:
+    Type : AWS::IAM::InstanceProfile
+    Properties:
+      Path : "/"
+      Roles :
+        - k8s
+
   master:
     Type: AWS::EC2::Instance
     Properties:
@@ -6,6 +13,7 @@ Resources:
       InstanceType: !Ref InstanceTypeParameter
       ImageId: "ami-0c6b1d09930fac512"
       KeyName: !Ref keynameParameter
+      IamInstanceProfile : !Ref InstanceProfile
       SecurityGroupIds:
         - !Ref privateSubnetSecurityGroup
       Tags:

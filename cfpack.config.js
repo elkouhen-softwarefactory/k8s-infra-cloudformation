@@ -13,7 +13,7 @@ module.exports = {
 			 */
 
 			/* uncomment if your CloudFormation template creates IAM roles */
-			// Capabilities: ['CAPABILITY_IAM'],
+			Capabilities: ['CAPABILITY_IAM'],
 
 			/* uncomment if your CloudFormation require parameters */
 			Parameters: [
