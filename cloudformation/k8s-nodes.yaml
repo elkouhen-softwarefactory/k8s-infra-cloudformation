@@ -19,8 +19,8 @@ Resources:
       Tags:
         - Key: Name
           Value: Master
-        - Key: kubernetes.io/cluster/mycluster
-          Value: mycluster
+        - Key: kubernetes.io/cluster/k8.test.ippon.com
+          Value: owned
   nodes:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
@@ -31,4 +31,7 @@ Resources:
       Tags:
         - Key: Name
           Value: Node
+          PropagateAtLaunch: true
+        - Key: kubernetes.io/cluster/k8.test.ippon.com
+          Value: owned
           PropagateAtLaunch: true

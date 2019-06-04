@@ -101,8 +101,8 @@
                         "Value": "Master"
                     },
                     {
-                        "Key": "kubernetes.io/cluster/mycluster",
-                        "Value": "mycluster"
+                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
+                        "Value": "owned"
                     }
                 ]
             }
@@ -128,6 +128,11 @@
                     {
                         "Key": "Name",
                         "Value": "Node",
+                        "PropagateAtLaunch": true
+                    },
+                    {
+                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
+                        "Value": "owned",
                         "PropagateAtLaunch": true
                     }
                 ]
@@ -193,8 +198,8 @@
                 },
                 "Tags": [
                     {
-                        "Key": "kubernetes.io/cluster/mycluster",
-                        "Value": "mycluster"
+                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
+                        "Value": "owned"
                     }
                 ]
             }
