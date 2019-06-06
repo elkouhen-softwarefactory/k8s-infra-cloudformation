@@ -29,6 +29,9 @@ Resources:
     Properties:
       CidrBlock: !Ref publicSubnetCidrParameter
       VpcId: !Ref VPC
+      Tags:
+        - Key: kubernetes.io/cluster/k8.test.ippon.com
+          Value: owned
   publicSubnetSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
