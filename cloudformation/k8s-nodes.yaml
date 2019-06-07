@@ -19,6 +19,8 @@ Resources:
       Tags:
         - Key: Name
           Value: Master
+        - Key: kubernetes.io/cluster/k8.test.ippon.com
+          Value: owned
 
   node1:
     Type: AWS::EC2::Instance

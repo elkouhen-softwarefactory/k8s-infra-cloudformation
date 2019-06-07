@@ -174,7 +174,11 @@
                 "Tags": [
                     {
                         "Key": "Name",
-                        "Value": "Master"
+                        "Value": "Node"
+                    },
+                    {
+                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
+                        "Value": "owned"
                     }
                 ]
             }
@@ -200,6 +204,11 @@
                     {
                         "Key": "Name",
                         "Value": "Node",
+                        "PropagateAtLaunch": true
+                    },
+                    {
+                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
+                        "Value": "owned",
                         "PropagateAtLaunch": true
                     }
                 ]
@@ -262,7 +271,13 @@
                 },
                 "VpcId": {
                     "Ref": "VPC"
-                }
+                },
+                "Tags": [
+                    {
+                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
+                        "Value": "owned"
+                    }
+                ]
             }
         },
         "privateSubnetSecurityGroup": {
@@ -347,7 +362,13 @@
                 },
                 "VpcId": {
                     "Ref": "VPC"
-                }
+                },
+                "Tags": [
+                    {
+                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
+                        "Value": "owned"
+                    }
+                ]
             }
         },
         "publicSubnetSecurityGroup": {
