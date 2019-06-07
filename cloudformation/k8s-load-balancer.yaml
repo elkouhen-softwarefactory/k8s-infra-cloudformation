@@ -1,0 +1,27 @@
+Resources:
+  K8SloadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Subnets:
+        - !Ref publicSubnet
+      Type: network
+
+  K8StargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Port: 80
+      Protocol: TCP
+      Targets:
+        - Id: !Ref node1
+      TargetType: instance
+      VpcId: !Ref VPC
+
+  K8SloadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref K8StargetGroup
+      LoadBalancerArn: !Ref K8SloadBalancer
+      Port: 80
+      Protocol: TCP

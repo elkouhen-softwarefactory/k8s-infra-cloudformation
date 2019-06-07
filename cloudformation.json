@@ -65,6 +65,53 @@
                 "Domain": "vpc"
             }
         },
+        "K8SloadBalancer": {
+            "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+            "Properties": {
+                "Subnets": [
+                    {
+                        "Ref": "publicSubnet"
+                    }
+                ],
+                "Type": "network"
+            }
+        },
+        "K8StargetGroup": {
+            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "Properties": {
+                "Port": 80,
+                "Protocol": "TCP",
+                "Targets": [
+                    {
+                        "Id": {
+                            "Ref": "node1"
+                        }
+                    }
+                ],
+                "TargetType": "instance",
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            }
+        },
+        "K8SloadBalancerListener": {
+            "Type": "AWS::ElasticLoadBalancingV2::Listener",
+            "Properties": {
+                "DefaultActions": [
+                    {
+                        "Type": "forward",
+                        "TargetGroupArn": {
+                            "Ref": "K8StargetGroup"
+                        }
+                    }
+                ],
+                "LoadBalancerArn": {
+                    "Ref": "K8SloadBalancer"
+                },
+                "Port": 80,
+                "Protocol": "TCP"
+            }
+        },
         "InstanceProfile": {
             "Type": "AWS::IAM::InstanceProfile",
             "Properties": {
@@ -99,10 +146,35 @@
                     {
                         "Key": "Name",
                         "Value": "Master"
-                    },
+                    }
+                ]
+            }
+        },
+        "node1": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "privateSubnet"
+                },
+                "InstanceType": {
+                    "Ref": "InstanceTypeParameter"
+                },
+                "ImageId": "ami-0c6b1d09930fac512",
+                "KeyName": {
+                    "Ref": "keynameParameter"
+                },
+                "IamInstanceProfile": {
+                    "Ref": "InstanceProfile"
+                },
+                "SecurityGroupIds": [
                     {
-                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
-                        "Value": "owned"
+                        "Ref": "privateSubnetSecurityGroup"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "Master"
                     }
                 ]
             }
@@ -128,11 +200,6 @@
                     {
                         "Key": "Name",
                         "Value": "Node",
-                        "PropagateAtLaunch": true
-                    },
-                    {
-                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
-                        "Value": "owned",
                         "PropagateAtLaunch": true
                     }
                 ]
@@ -195,13 +262,7 @@
                 },
                 "VpcId": {
                     "Ref": "VPC"
-                },
-                "Tags": [
-                    {
-                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
-                        "Value": "owned"
-                    }
-                ]
+                }
             }
         },
         "privateSubnetSecurityGroup": {
@@ -286,13 +347,7 @@
                 },
                 "VpcId": {
                     "Ref": "VPC"
-                },
-                "Tags": [
-                    {
-                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
-                        "Value": "owned"
-                    }
-                ]
+                }
             }
         },
         "publicSubnetSecurityGroup": {

@@ -19,8 +19,23 @@ Resources:
       Tags:
         - Key: Name
           Value: Master
+
+  node1:
+    Type: AWS::EC2::Instance
+    Properties:
+      SubnetId: !Ref privateSubnet
+      InstanceType: !Ref InstanceTypeParameter
+      ImageId: "ami-0c6b1d09930fac512"
+      KeyName: !Ref keynameParameter
+      IamInstanceProfile : !Ref InstanceProfile
+      SecurityGroupIds:
+        - !Ref privateSubnetSecurityGroup
+      Tags:
+        - Key: Name
+          Value: Node
         - Key: kubernetes.io/cluster/k8.test.ippon.com
           Value: owned
+
   nodes:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:

@@ -8,15 +8,18 @@ Resources:
           - EIP
           - AllocationId
       SubnetId: !Ref publicSubnet
+
   privateRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VPC
+
   privateSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       RouteTableId: !Ref privateRouteTable
       SubnetId: !Ref privateSubnet
+
   privateNatRoute:
     Type: AWS::EC2::Route
     DependsOn:
@@ -25,6 +28,7 @@ Resources:
       RouteTableId: !Ref privateRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref privateNatGateway
+
   privateSubnet:
     Type: AWS::EC2::Subnet
     Properties:
