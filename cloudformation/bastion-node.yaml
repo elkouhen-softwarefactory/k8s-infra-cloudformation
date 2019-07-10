@@ -51,8 +51,9 @@ Resources:
           #!/bin/bash -xe
           yum update -y aws-cfn-bootstrap
           yum install -y python-pip git
-          pip install ansible==2.7.2 boto boto3 botocore
+          pip install ansible boto boto3 botocore
           git clone https://github.com/elkouhen/k8s-deploy.git /home/ec2-user/k8s-deploy
+          cd /home/ec2-user/k8s-deploy; git checkout aws
           chown -R ec2-user /home/ec2-user/k8s-deploy
           /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion --region ${AWS::Region}
           /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion --region ${AWS::Region}

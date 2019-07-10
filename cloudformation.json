@@ -46,7 +46,7 @@
                 ],
                 "UserData": {
                     "Fn::Base64": {
-                        "Fn::Sub": "#!/bin/bash -xe\nyum update -y aws-cfn-bootstrap\nyum install -y python-pip git\npip install ansible==2.7.2 boto boto3 botocore\ngit clone https://github.com/elkouhen/k8s-deploy.git /home/ec2-user/k8s-deploy\nchown -R ec2-user /home/ec2-user/k8s-deploy\n/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion --region ${AWS::Region}\n/opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion --region ${AWS::Region}\n"
+                        "Fn::Sub": "#!/bin/bash -xe\nyum update -y aws-cfn-bootstrap\nyum install -y python-pip git\npip install ansible boto boto3 botocore\ngit clone https://github.com/elkouhen/k8s-deploy.git /home/ec2-user/k8s-deploy\ncd /home/ec2-user/k8s-deploy; git checkout aws\nchown -R ec2-user /home/ec2-user/k8s-deploy\n/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion --region ${AWS::Region}\n/opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion --region ${AWS::Region}\n"
                     }
                 }
             }
@@ -146,6 +146,10 @@
                     {
                         "Key": "Name",
                         "Value": "Master"
+                    },
+                    {
+                        "Key": "kubernetes.io/cluster/k8s.melkouhen.net",
+                        "Value": "owned"
                     }
                 ]
             }
@@ -177,7 +181,7 @@
                         "Value": "Node"
                     },
                     {
-                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
+                        "Key": "kubernetes.io/cluster/k8s.melkouhen.net",
                         "Value": "owned"
                     }
                 ]
@@ -207,7 +211,7 @@
                         "PropagateAtLaunch": true
                     },
                     {
-                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
+                        "Key": "kubernetes.io/cluster/k8s.melkouhen.net",
                         "Value": "owned",
                         "PropagateAtLaunch": true
                     }
@@ -274,7 +278,7 @@
                 },
                 "Tags": [
                     {
-                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
+                        "Key": "kubernetes.io/cluster/k8s.melkouhen.net",
                         "Value": "owned"
                     }
                 ]
@@ -365,7 +369,7 @@
                 },
                 "Tags": [
                     {
-                        "Key": "kubernetes.io/cluster/k8.test.ippon.com",
+                        "Key": "kubernetes.io/cluster/k8s.melkouhen.net",
                         "Value": "owned"
                     }
                 ]

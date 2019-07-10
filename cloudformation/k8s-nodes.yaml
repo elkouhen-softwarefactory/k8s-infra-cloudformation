@@ -19,7 +19,7 @@ Resources:
       Tags:
         - Key: Name
           Value: Master
-        - Key: kubernetes.io/cluster/k8.test.ippon.com
+        - Key: kubernetes.io/cluster/k8s.melkouhen.net
           Value: owned
 
   node1:
@@ -35,7 +35,7 @@ Resources:
       Tags:
         - Key: Name
           Value: Node
-        - Key: kubernetes.io/cluster/k8.test.ippon.com
+        - Key: kubernetes.io/cluster/k8s.melkouhen.net
           Value: owned
 
   nodes:
@@ -49,6 +49,6 @@ Resources:
         - Key: Name
           Value: Node
           PropagateAtLaunch: true
-        - Key: kubernetes.io/cluster/k8.test.ippon.com
+        - Key: kubernetes.io/cluster/k8s.melkouhen.net
           Value: owned
           PropagateAtLaunch: true
