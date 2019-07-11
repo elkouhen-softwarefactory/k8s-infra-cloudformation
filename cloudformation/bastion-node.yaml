@@ -40,8 +40,8 @@ Resources:
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0
-          GroupSet: [!Ref publicSubnetSecurityGroup]
-          SubnetId: !Ref publicSubnet
+          GroupSet: [!Ref publicSubnet1SecurityGroup]
+          SubnetId: !Ref publicSubnet1
       Tags:
         - Key: Name
           Value: Bastion

@@ -1,0 +1,49 @@
+Resources:
+  internetGateway2:
+    Type: AWS::EC2::InternetGateway
+  attachGateway2:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref internetGateway2
+  publicRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+  publicSubnetRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref publicRouteTable2
+      SubnetId: !Ref publicSubnet2
+  publicRoute2:
+    Type: AWS::EC2::Route
+    DependsOn:
+      - internetGateway2
+      - attachGateway2
+    Properties:
+      RouteTableId: !Ref publicRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref internetGateway2
+  publicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: !Ref publicSubnet2CidrParameter
+      VpcId: !Ref VPC
+      Tags:
+        - Key: kubernetes.io/cluster/k8s.melkouhen.net
+          Value: owned
+  publicSubnet2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VPC
+      GroupDescription: publicSubnet2SecurityGroup
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: "0.0.0.0/0"
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: 0
+          ToPort: 0
+          CidrIp: "0.0.0.0/0"

@@ -30,11 +30,11 @@
                         "DeviceIndex": 0,
                         "GroupSet": [
                             {
-                                "Ref": "publicSubnetSecurityGroup"
+                                "Ref": "publicSubnet1SecurityGroup"
                             }
                         ],
                         "SubnetId": {
-                            "Ref": "publicSubnet"
+                            "Ref": "publicSubnet1"
                         }
                     }
                 ],
@@ -70,7 +70,7 @@
             "Properties": {
                 "Subnets": [
                     {
-                        "Ref": "publicSubnet"
+                        "Ref": "publicSubnet1"
                     }
                 ],
                 "Type": "network"
@@ -125,7 +125,7 @@
             "Type": "AWS::EC2::Instance",
             "Properties": {
                 "SubnetId": {
-                    "Ref": "privateSubnet"
+                    "Ref": "privateSubnet1"
                 },
                 "InstanceType": {
                     "Ref": "InstanceTypeParameter"
@@ -158,7 +158,7 @@
             "Type": "AWS::EC2::Instance",
             "Properties": {
                 "SubnetId": {
-                    "Ref": "privateSubnet"
+                    "Ref": "privateSubnet1"
                 },
                 "InstanceType": {
                     "Ref": "InstanceTypeParameter"
@@ -201,7 +201,7 @@
                 },
                 "VPCZoneIdentifier": [
                     {
-                        "Ref": "privateSubnet"
+                        "Ref": "privateSubnet1"
                     }
                 ],
                 "Tags": [
@@ -218,8 +218,8 @@
                 ]
             }
         },
-        "privateNatGateway": {
-            "DependsOn": "attachGateway",
+        "privateNatGateway1": {
+            "DependsOn": "attachGateway1",
             "Type": "AWS::EC2::NatGateway",
             "Properties": {
                 "AllocationId": {
@@ -229,11 +229,11 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "publicSubnet"
+                    "Ref": "publicSubnet1"
                 }
             }
         },
-        "privateRouteTable": {
+        "privateRouteTable1": {
             "Type": "AWS::EC2::RouteTable",
             "Properties": {
                 "VpcId": {
@@ -241,37 +241,37 @@
                 }
             }
         },
-        "privateSubnetRouteTableAssociation": {
+        "privateSubnet1RouteTableAssociation": {
             "Type": "AWS::EC2::SubnetRouteTableAssociation",
             "Properties": {
                 "RouteTableId": {
-                    "Ref": "privateRouteTable"
+                    "Ref": "privateRouteTable1"
                 },
                 "SubnetId": {
-                    "Ref": "privateSubnet"
+                    "Ref": "privateSubnet1"
                 }
             }
         },
-        "privateNatRoute": {
+        "privateNatRoute1": {
             "Type": "AWS::EC2::Route",
             "DependsOn": [
-                "privateNatGateway"
+                "privateNatGateway1"
             ],
             "Properties": {
                 "RouteTableId": {
-                    "Ref": "privateRouteTable"
+                    "Ref": "privateRouteTable1"
                 },
                 "DestinationCidrBlock": "0.0.0.0/0",
                 "NatGatewayId": {
-                    "Ref": "privateNatGateway"
+                    "Ref": "privateNatGateway1"
                 }
             }
         },
-        "privateSubnet": {
+        "privateSubnet1": {
             "Type": "AWS::EC2::Subnet",
             "Properties": {
                 "CidrBlock": {
-                    "Ref": "privateSubnetCidrParameter"
+                    "Ref": "privateSubnet1CidrParameter"
                 },
                 "VpcId": {
                     "Ref": "VPC"
@@ -309,21 +309,22 @@
                 ]
             }
         },
-        "internetGateway": {
-            "Type": "AWS::EC2::InternetGateway"
-        },
-        "attachGateway": {
-            "Type": "AWS::EC2::VPCGatewayAttachment",
+        "privateNatGateway2": {
+            "DependsOn": "attachGateway2",
+            "Type": "AWS::EC2::NatGateway",
             "Properties": {
-                "VpcId": {
-                    "Ref": "VPC"
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "EIP",
+                        "AllocationId"
+                    ]
                 },
-                "InternetGatewayId": {
-                    "Ref": "internetGateway"
+                "SubnetId": {
+                    "Ref": "publicSubnet1"
                 }
             }
         },
-        "publicRouteTable": {
+        "privateRouteTable2": {
             "Type": "AWS::EC2::RouteTable",
             "Properties": {
                 "VpcId": {
@@ -331,38 +332,37 @@
                 }
             }
         },
-        "publicSubnetRouteTableAssociation": {
+        "privateSubnetRoute2TableAssociation": {
             "Type": "AWS::EC2::SubnetRouteTableAssociation",
             "Properties": {
                 "RouteTableId": {
-                    "Ref": "publicRouteTable"
+                    "Ref": "privateRouteTable2"
                 },
                 "SubnetId": {
-                    "Ref": "publicSubnet"
+                    "Ref": "privateSubnet1"
                 }
             }
         },
-        "publicRoute": {
+        "privateNatRoute2": {
             "Type": "AWS::EC2::Route",
             "DependsOn": [
-                "internetGateway",
-                "attachGateway"
+                "privateNatGateway2"
             ],
             "Properties": {
                 "RouteTableId": {
-                    "Ref": "publicRouteTable"
+                    "Ref": "privateRouteTable2"
                 },
                 "DestinationCidrBlock": "0.0.0.0/0",
-                "GatewayId": {
-                    "Ref": "internetGateway"
+                "NatGatewayId": {
+                    "Ref": "privateNatGateway2"
                 }
             }
         },
-        "publicSubnet": {
+        "privateSubnet2": {
             "Type": "AWS::EC2::Subnet",
             "Properties": {
                 "CidrBlock": {
-                    "Ref": "publicSubnetCidrParameter"
+                    "Ref": "privateSubnet2CidrParameter"
                 },
                 "VpcId": {
                     "Ref": "VPC"
@@ -375,13 +375,170 @@
                 ]
             }
         },
-        "publicSubnetSecurityGroup": {
+        "internetGateway1": {
+            "Type": "AWS::EC2::InternetGateway"
+        },
+        "attachGateway1": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "InternetGatewayId": {
+                    "Ref": "internetGateway1"
+                }
+            }
+        },
+        "publicRouteTable1": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            }
+        },
+        "publicSubnetRouteTableAssociation1": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "publicRouteTable1"
+                },
+                "SubnetId": {
+                    "Ref": "publicSubnet1"
+                }
+            }
+        },
+        "publicRoute1": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": [
+                "internetGateway1",
+                "attachGateway1"
+            ],
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "publicRouteTable1"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref": "internetGateway1"
+                }
+            }
+        },
+        "publicSubnet1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "publicSubnet1CidrParameter"
+                },
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "Tags": [
+                    {
+                        "Key": "kubernetes.io/cluster/k8s.melkouhen.net",
+                        "Value": "owned"
+                    }
+                ]
+            }
+        },
+        "publicSubnet1SecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
                 "VpcId": {
                     "Ref": "VPC"
                 },
-                "GroupDescription": "publicSubnetSecurityGroup",
+                "GroupDescription": "publicSubnet1SecurityGroup",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 22,
+                        "ToPort": 22,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "SecurityGroupEgress": [
+                    {
+                        "IpProtocol": -1,
+                        "FromPort": 0,
+                        "ToPort": 0,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        },
+        "internetGateway2": {
+            "Type": "AWS::EC2::InternetGateway"
+        },
+        "attachGateway2": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "InternetGatewayId": {
+                    "Ref": "internetGateway2"
+                }
+            }
+        },
+        "publicRouteTable2": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            }
+        },
+        "publicSubnetRouteTableAssociation2": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "publicRouteTable2"
+                },
+                "SubnetId": {
+                    "Ref": "publicSubnet2"
+                }
+            }
+        },
+        "publicRoute2": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": [
+                "internetGateway2",
+                "attachGateway2"
+            ],
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "publicRouteTable2"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref": "internetGateway2"
+                }
+            }
+        },
+        "publicSubnet2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "publicSubnet2CidrParameter"
+                },
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "Tags": [
+                    {
+                        "Key": "kubernetes.io/cluster/k8s.melkouhen.net",
+                        "Value": "owned"
+                    }
+                ]
+            }
+        },
+        "publicSubnet2SecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "GroupDescription": "publicSubnet2SecurityGroup",
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
@@ -417,14 +574,24 @@
             "Default": "10.0.0.0/16",
             "Description": "VPC CIDR"
         },
-        "privateSubnetCidrParameter": {
+        "privateSubnet1CidrParameter": {
             "Type": "String",
-            "Default": "10.0.1.0/24",
+            "Default": "10.0.2.0/24",
             "Description": "Private Subnet CIDR"
         },
-        "publicSubnetCidrParameter": {
+        "privateSubnet2CidrParameter": {
+            "Type": "String",
+            "Default": "10.0.3.0/24",
+            "Description": "Private Subnet CIDR"
+        },
+        "publicSubnet1CidrParameter": {
             "Type": "String",
             "Default": "10.0.0.0/24",
+            "Description": "Public Subnet CIDR"
+        },
+        "publicSubnet2CidrParameter": {
+            "Type": "String",
+            "Default": "10.0.1.0/24",
             "Description": "Public Subnet CIDR"
         },
         "keynameParameter": {

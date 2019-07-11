@@ -3,7 +3,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       Subnets:
-        - !Ref publicSubnet
+        - !Ref publicSubnet1
       Type: network
 
   K8StargetGroup:

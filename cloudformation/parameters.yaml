@@ -11,13 +11,21 @@ Parameters:
     Type: String
     Default: "10.0.0.0/16"
     Description: VPC CIDR
-  privateSubnetCidrParameter:
+  privateSubnet1CidrParameter:
     Type: String
-    Default: "10.0.1.0/24"
+    Default: "10.0.2.0/24"
     Description: Private Subnet CIDR
-  publicSubnetCidrParameter:
+  privateSubnet2CidrParameter:
+    Type: String
+    Default: "10.0.3.0/24"
+    Description: Private Subnet CIDR
+  publicSubnet1CidrParameter:
     Type: String
     Default: "10.0.0.0/24"
+    Description: Public Subnet CIDR
+  publicSubnet2CidrParameter:
+    Type: String
+    Default: "10.0.1.0/24"
     Description: Public Subnet CIDR
   keynameParameter:
     Type: String

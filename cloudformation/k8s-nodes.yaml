@@ -9,7 +9,7 @@ Resources:
   master:
     Type: AWS::EC2::Instance
     Properties:
-      SubnetId: !Ref privateSubnet
+      SubnetId: !Ref privateSubnet1
       InstanceType: !Ref InstanceTypeParameter
       ImageId: "ami-0c6b1d09930fac512"
       KeyName: !Ref keynameParameter
@@ -25,7 +25,7 @@ Resources:
   node1:
     Type: AWS::EC2::Instance
     Properties:
-      SubnetId: !Ref privateSubnet
+      SubnetId: !Ref privateSubnet1
       InstanceType: !Ref InstanceTypeParameter
       ImageId: "ami-0c6b1d09930fac512"
       KeyName: !Ref keynameParameter
@@ -44,7 +44,7 @@ Resources:
       InstanceId: !Ref master
       MinSize: !Ref k8sMinNodeSizeParameter
       MaxSize: !Ref k8sMaxNodeSizeParameter
-      VPCZoneIdentifier: [!Ref privateSubnet]
+      VPCZoneIdentifier: [!Ref privateSubnet1]
       Tags:
         - Key: Name
           Value: Node
