@@ -15,7 +15,7 @@ Resources:
       KeyName: !Ref keynameParameter
       IamInstanceProfile : !Ref InstanceProfile
       SecurityGroupIds:
-        - !Ref privateSubnetSecurityGroup
+        - !Ref privateSubnet1SecurityGroup
       Tags:
         - Key: Name
           Value: Master
@@ -31,7 +31,7 @@ Resources:
       KeyName: !Ref keynameParameter
       IamInstanceProfile : !Ref InstanceProfile
       SecurityGroupIds:
-        - !Ref privateSubnetSecurityGroup
+        - !Ref privateSubnet1SecurityGroup
       Tags:
         - Key: Name
           Value: Node
