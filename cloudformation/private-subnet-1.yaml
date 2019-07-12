@@ -1,0 +1,24 @@
+Resources:
+  privateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: !Ref privateSubnet1CidrParameter
+      VpcId: !Ref VPC
+      Tags:
+        - Key: kubernetes.io/cluster/k8s.melkouhen.net
+          Value: owned
+  privateSubnet1SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VPC
+      GroupDescription: privateSubnet1SecurityGroup
+      SecurityGroupIngress:
+        - IpProtocol: -1
+          FromPort: 0
+          ToPort: 0
+          CidrIp: "0.0.0.0/0"
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: 0
+          ToPort: 0
+          CidrIp: "0.0.0.0/0"
