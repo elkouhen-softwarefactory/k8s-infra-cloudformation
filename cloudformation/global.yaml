@@ -3,11 +3,10 @@ Resources:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: !Ref VPCCidrParameter
-  EIP1:
-    Type: AWS::EC2::EIP
+  internetGateway:
+    Type: AWS::EC2::InternetGateway
+  attachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
     Properties:
-      Domain: vpc
-  EIP2:
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref internetGateway

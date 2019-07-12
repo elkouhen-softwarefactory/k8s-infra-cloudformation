@@ -11,12 +11,12 @@ Resources:
   publicRoute2:
     Type: AWS::EC2::Route
     DependsOn:
-      - internetGateway1
-      - attachGateway1
+      - internetGateway
+      - attachGateway
     Properties:
       RouteTableId: !Ref publicRouteTable2
       DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref internetGateway1
+      GatewayId: !Ref internetGateway
   publicSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
