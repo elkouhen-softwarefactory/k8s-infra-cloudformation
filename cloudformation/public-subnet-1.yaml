@@ -1,34 +1,10 @@
 Resources:
-  internetGateway1:
-    Type: AWS::EC2::InternetGateway
-  attachGateway1:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref VPC
-      InternetGatewayId: !Ref internetGateway1
-  publicRouteTable1:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-  publicSubnetRouteTableAssociation1:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref publicRouteTable1
-      SubnetId: !Ref publicSubnet1
-  publicRoute1:
-    Type: AWS::EC2::Route
-    DependsOn:
-      - internetGateway1
-      - attachGateway1
-    Properties:
-      RouteTableId: !Ref publicRouteTable1
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref internetGateway1
   publicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
       CidrBlock: !Ref publicSubnet1CidrParameter
       VpcId: !Ref VPC
+      AvailabilityZone: us-east-1d
       Tags:
         - Key: kubernetes.io/cluster/k8s.melkouhen.net
           Value: owned
