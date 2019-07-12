@@ -23,7 +23,7 @@ module.exports = {
 				},
 				{
 					ParameterKey: 'k8sMaxNodeSizeParameter',
-					ParameterValue: "1",
+					ParameterValue: "2",
 				}
 			],
 		},

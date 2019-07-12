@@ -1,11 +1,18 @@
 Resources:
+  internetGateway1:
+    Type: AWS::EC2::InternetGateway
+  attachGateway1:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref internetGateway1
   privateNatGateway1:
     DependsOn: attachGateway1
     Type: AWS::EC2::NatGateway
     Properties:
       AllocationId:
         Fn::GetAtt:
-          - EIP
+          - EIP1
           - AllocationId
       SubnetId: !Ref publicSubnet1
   privateRouteTable1:

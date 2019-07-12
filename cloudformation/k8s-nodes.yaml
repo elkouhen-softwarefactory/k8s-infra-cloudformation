@@ -22,22 +22,6 @@ Resources:
         - Key: kubernetes.io/cluster/k8s.melkouhen.net
           Value: owned
 
-  node1:
-    Type: AWS::EC2::Instance
-    Properties:
-      SubnetId: !Ref privateSubnet1
-      InstanceType: !Ref InstanceTypeParameter
-      ImageId: "ami-0c6b1d09930fac512"
-      KeyName: !Ref keynameParameter
-      IamInstanceProfile : !Ref InstanceProfile
-      SecurityGroupIds:
-        - !Ref privateSubnet1SecurityGroup
-      Tags:
-        - Key: Name
-          Value: Node
-        - Key: kubernetes.io/cluster/k8s.melkouhen.net
-          Value: owned
-
   nodes:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:

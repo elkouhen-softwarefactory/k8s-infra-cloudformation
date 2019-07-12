@@ -51,6 +51,84 @@
                 }
             }
         },
+        "internetGateway1": {
+            "Type": "AWS::EC2::InternetGateway"
+        },
+        "attachGateway1": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "InternetGatewayId": {
+                    "Ref": "internetGateway1"
+                }
+            }
+        },
+        "privateNatGateway1": {
+            "DependsOn": "attachGateway1",
+            "Type": "AWS::EC2::NatGateway",
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "EIP1",
+                        "AllocationId"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "publicSubnet1"
+                }
+            }
+        },
+        "privateRouteTable1": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            }
+        },
+        "privateSubnet1RouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "privateRouteTable1"
+                },
+                "SubnetId": {
+                    "Ref": "privateSubnet1"
+                }
+            }
+        },
+        "privateNatRoute1": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": [
+                "privateNatGateway1"
+            ],
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "privateRouteTable1"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "NatGatewayId": {
+                    "Ref": "privateNatGateway1"
+                }
+            }
+        },
+        "privateNatGateway2": {
+            "DependsOn": "attachGateway1",
+            "Type": "AWS::EC2::NatGateway",
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "EIP2",
+                        "AllocationId"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "publicSubnet2"
+                }
+            }
+        },
         "VPC": {
             "Type": "AWS::EC2::VPC",
             "Properties": {
@@ -59,57 +137,16 @@
                 }
             }
         },
-        "EIP": {
+        "EIP1": {
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc"
             }
         },
-        "K8SloadBalancer": {
-            "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+        "EIP2": {
+            "Type": "AWS::EC2::EIP",
             "Properties": {
-                "Subnets": [
-                    {
-                        "Ref": "publicSubnet1"
-                    }
-                ],
-                "Type": "network"
-            }
-        },
-        "K8StargetGroup": {
-            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-            "Properties": {
-                "Port": 80,
-                "Protocol": "TCP",
-                "Targets": [
-                    {
-                        "Id": {
-                            "Ref": "node1"
-                        }
-                    }
-                ],
-                "TargetType": "instance",
-                "VpcId": {
-                    "Ref": "VPC"
-                }
-            }
-        },
-        "K8SloadBalancerListener": {
-            "Type": "AWS::ElasticLoadBalancingV2::Listener",
-            "Properties": {
-                "DefaultActions": [
-                    {
-                        "Type": "forward",
-                        "TargetGroupArn": {
-                            "Ref": "K8StargetGroup"
-                        }
-                    }
-                ],
-                "LoadBalancerArn": {
-                    "Ref": "K8SloadBalancer"
-                },
-                "Port": 80,
-                "Protocol": "TCP"
+                "Domain": "vpc"
             }
         },
         "InstanceProfile": {
@@ -154,39 +191,6 @@
                 ]
             }
         },
-        "node1": {
-            "Type": "AWS::EC2::Instance",
-            "Properties": {
-                "SubnetId": {
-                    "Ref": "privateSubnet1"
-                },
-                "InstanceType": {
-                    "Ref": "InstanceTypeParameter"
-                },
-                "ImageId": "ami-0c6b1d09930fac512",
-                "KeyName": {
-                    "Ref": "keynameParameter"
-                },
-                "IamInstanceProfile": {
-                    "Ref": "InstanceProfile"
-                },
-                "SecurityGroupIds": [
-                    {
-                        "Ref": "privateSubnet1SecurityGroup"
-                    }
-                ],
-                "Tags": [
-                    {
-                        "Key": "Name",
-                        "Value": "Node"
-                    },
-                    {
-                        "Key": "kubernetes.io/cluster/k8s.melkouhen.net",
-                        "Value": "owned"
-                    }
-                ]
-            }
-        },
         "nodes": {
             "Type": "AWS::AutoScaling::AutoScalingGroup",
             "Properties": {
@@ -218,55 +222,6 @@
                 ]
             }
         },
-        "privateNatGateway1": {
-            "DependsOn": "attachGateway1",
-            "Type": "AWS::EC2::NatGateway",
-            "Properties": {
-                "AllocationId": {
-                    "Fn::GetAtt": [
-                        "EIP",
-                        "AllocationId"
-                    ]
-                },
-                "SubnetId": {
-                    "Ref": "publicSubnet1"
-                }
-            }
-        },
-        "privateRouteTable1": {
-            "Type": "AWS::EC2::RouteTable",
-            "Properties": {
-                "VpcId": {
-                    "Ref": "VPC"
-                }
-            }
-        },
-        "privateSubnet1RouteTableAssociation": {
-            "Type": "AWS::EC2::SubnetRouteTableAssociation",
-            "Properties": {
-                "RouteTableId": {
-                    "Ref": "privateRouteTable1"
-                },
-                "SubnetId": {
-                    "Ref": "privateSubnet1"
-                }
-            }
-        },
-        "privateNatRoute1": {
-            "Type": "AWS::EC2::Route",
-            "DependsOn": [
-                "privateNatGateway1"
-            ],
-            "Properties": {
-                "RouteTableId": {
-                    "Ref": "privateRouteTable1"
-                },
-                "DestinationCidrBlock": "0.0.0.0/0",
-                "NatGatewayId": {
-                    "Ref": "privateNatGateway1"
-                }
-            }
-        },
         "privateSubnet1": {
             "Type": "AWS::EC2::Subnet",
             "Properties": {
@@ -276,6 +231,7 @@
                 "VpcId": {
                     "Ref": "VPC"
                 },
+                "AvailabilityZone": "us-east-1d",
                 "Tags": [
                     {
                         "Key": "kubernetes.io/cluster/k8s.melkouhen.net",
@@ -307,20 +263,6 @@
                         "CidrIp": "0.0.0.0/0"
                     }
                 ]
-            }
-        },
-        "internetGateway1": {
-            "Type": "AWS::EC2::InternetGateway"
-        },
-        "attachGateway1": {
-            "Type": "AWS::EC2::VPCGatewayAttachment",
-            "Properties": {
-                "VpcId": {
-                    "Ref": "VPC"
-                },
-                "InternetGatewayId": {
-                    "Ref": "internetGateway1"
-                }
             }
         },
         "publicRouteTable1": {
@@ -367,6 +309,7 @@
                 "VpcId": {
                     "Ref": "VPC"
                 },
+                "AvailabilityZone": "us-east-1d",
                 "Tags": [
                     {
                         "Key": "kubernetes.io/cluster/k8s.melkouhen.net",
@@ -409,6 +352,7 @@
                 "VpcId": {
                     "Ref": "VPC"
                 },
+                "AvailabilityZone": "us-east-1e",
                 "Tags": [
                     {
                         "Key": "kubernetes.io/cluster/k8s.melkouhen.net",
