@@ -1,4 +1,22 @@
 Resources:
+  publicRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+  publicSubnetRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref publicRouteTable2
+      SubnetId: !Ref publicSubnet2
+  publicRoute2:
+    Type: AWS::EC2::Route
+    DependsOn:
+      - internetGateway1
+      - attachGateway1
+    Properties:
+      RouteTableId: !Ref publicRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref internetGateway1
   publicSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
