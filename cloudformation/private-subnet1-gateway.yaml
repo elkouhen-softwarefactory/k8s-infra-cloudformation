@@ -1,5 +1,5 @@
 Resources:
-  privateNatGateway1:
+  privateSubnet1NatGateway:
     DependsOn: attachGateway
     Type: AWS::EC2::NatGateway
     Properties:
@@ -8,23 +8,23 @@ Resources:
           - privateSubnet1EIP
           - AllocationId
       SubnetId: !Ref publicSubnet1
-  privateRouteTable1:
+  privateSubnet1RouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VPC
   privateSubnet1RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref privateRouteTable1
+      RouteTableId: !Ref privateSubnet1RouteTable
       SubnetId: !Ref privateSubnet1
   privateSubnet1Route:
     Type: AWS::EC2::Route
     DependsOn:
-      - privateNatGateway1
+      - privateSubnet1NatGateway
     Properties:
-      RouteTableId: !Ref privateRouteTable1
+      RouteTableId: !Ref privateSubnet1RouteTable
       DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref privateNatGateway1
+      NatGatewayId: !Ref privateSubnet1NatGateway
   privateSubnet1EIP:
     Type: AWS::EC2::EIP
     Properties:
