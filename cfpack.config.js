@@ -19,7 +19,7 @@ module.exports = {
 			Parameters: [
 				{
 					ParameterKey: 'k8sMinNodeSizeParameter',
-					ParameterValue: "1",
+					ParameterValue: "2",
 				},
 				{
 					ParameterKey: 'k8sMaxNodeSizeParameter',

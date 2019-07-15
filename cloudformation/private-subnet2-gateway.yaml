@@ -1,15 +1,15 @@
 Resources:
-  privateNatGateway2:
+  privateSubnet2NatGateway:
     DependsOn: attachGateway
     Type: AWS::EC2::NatGateway
     Properties:
       AllocationId:
         Fn::GetAtt:
-          - EIP2
+          - privateSubnet2EIP
           - AllocationId
       SubnetId: !Ref publicSubnet2
 
-  EIP2:
+  privateSubnet2EIP:
     Type: AWS::EC2::EIP
     Properties:
       Domain: vpc

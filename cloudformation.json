@@ -51,84 +51,6 @@
                 }
             }
         },
-        "internetGateway1": {
-            "Type": "AWS::EC2::InternetGateway"
-        },
-        "attachGateway1": {
-            "Type": "AWS::EC2::VPCGatewayAttachment",
-            "Properties": {
-                "VpcId": {
-                    "Ref": "VPC"
-                },
-                "InternetGatewayId": {
-                    "Ref": "internetGateway1"
-                }
-            }
-        },
-        "privateNatGateway1": {
-            "DependsOn": "attachGateway1",
-            "Type": "AWS::EC2::NatGateway",
-            "Properties": {
-                "AllocationId": {
-                    "Fn::GetAtt": [
-                        "EIP1",
-                        "AllocationId"
-                    ]
-                },
-                "SubnetId": {
-                    "Ref": "publicSubnet1"
-                }
-            }
-        },
-        "privateRouteTable1": {
-            "Type": "AWS::EC2::RouteTable",
-            "Properties": {
-                "VpcId": {
-                    "Ref": "VPC"
-                }
-            }
-        },
-        "privateSubnet1RouteTableAssociation": {
-            "Type": "AWS::EC2::SubnetRouteTableAssociation",
-            "Properties": {
-                "RouteTableId": {
-                    "Ref": "privateRouteTable1"
-                },
-                "SubnetId": {
-                    "Ref": "privateSubnet1"
-                }
-            }
-        },
-        "privateNatRoute1": {
-            "Type": "AWS::EC2::Route",
-            "DependsOn": [
-                "privateNatGateway1"
-            ],
-            "Properties": {
-                "RouteTableId": {
-                    "Ref": "privateRouteTable1"
-                },
-                "DestinationCidrBlock": "0.0.0.0/0",
-                "NatGatewayId": {
-                    "Ref": "privateNatGateway1"
-                }
-            }
-        },
-        "privateNatGateway2": {
-            "DependsOn": "attachGateway1",
-            "Type": "AWS::EC2::NatGateway",
-            "Properties": {
-                "AllocationId": {
-                    "Fn::GetAtt": [
-                        "EIP2",
-                        "AllocationId"
-                    ]
-                },
-                "SubnetId": {
-                    "Ref": "publicSubnet2"
-                }
-            }
-        },
         "VPC": {
             "Type": "AWS::EC2::VPC",
             "Properties": {
@@ -137,16 +59,18 @@
                 }
             }
         },
-        "EIP1": {
-            "Type": "AWS::EC2::EIP",
-            "Properties": {
-                "Domain": "vpc"
-            }
+        "internetGateway": {
+            "Type": "AWS::EC2::InternetGateway"
         },
-        "EIP2": {
-            "Type": "AWS::EC2::EIP",
+        "attachGateway": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
             "Properties": {
-                "Domain": "vpc"
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "InternetGatewayId": {
+                    "Ref": "internetGateway"
+                }
             }
         },
         "InstanceProfile": {
@@ -265,6 +189,82 @@
                 ]
             }
         },
+        "privateNatGateway1": {
+            "DependsOn": "attachGateway",
+            "Type": "AWS::EC2::NatGateway",
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "EIP1",
+                        "AllocationId"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "publicSubnet1"
+                }
+            }
+        },
+        "privateRouteTable1": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            }
+        },
+        "privateSubnet1RouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "privateRouteTable1"
+                },
+                "SubnetId": {
+                    "Ref": "privateSubnet1"
+                }
+            }
+        },
+        "privateNatRoute1": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": [
+                "privateNatGateway1"
+            ],
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "privateRouteTable1"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "NatGatewayId": {
+                    "Ref": "privateNatGateway1"
+                }
+            }
+        },
+        "EIP1": {
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc"
+            }
+        },
+        "privateNatGateway2": {
+            "DependsOn": "attachGateway",
+            "Type": "AWS::EC2::NatGateway",
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "EIP2",
+                        "AllocationId"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "publicSubnet2"
+                }
+            }
+        },
+        "EIP2": {
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc"
+            }
+        },
         "publicRouteTable1": {
             "Type": "AWS::EC2::RouteTable",
             "Properties": {
@@ -287,8 +287,8 @@
         "publicRoute1": {
             "Type": "AWS::EC2::Route",
             "DependsOn": [
-                "internetGateway1",
-                "attachGateway1"
+                "internetGateway",
+                "attachGateway"
             ],
             "Properties": {
                 "RouteTableId": {
@@ -296,7 +296,7 @@
                 },
                 "DestinationCidrBlock": "0.0.0.0/0",
                 "GatewayId": {
-                    "Ref": "internetGateway1"
+                    "Ref": "internetGateway"
                 }
             }
         },
@@ -365,8 +365,8 @@
         "publicRoute2": {
             "Type": "AWS::EC2::Route",
             "DependsOn": [
-                "internetGateway1",
-                "attachGateway1"
+                "internetGateway",
+                "attachGateway"
             ],
             "Properties": {
                 "RouteTableId": {
@@ -374,7 +374,7 @@
                 },
                 "DestinationCidrBlock": "0.0.0.0/0",
                 "GatewayId": {
-                    "Ref": "internetGateway1"
+                    "Ref": "internetGateway"
                 }
             }
         },
