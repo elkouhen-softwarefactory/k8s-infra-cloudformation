@@ -17,6 +17,10 @@ module.exports = {
 
 			/* uncomment if your CloudFormation require parameters */
 			Parameters: [
+							{
+            					ParameterKey: 'InstanceTypeParameter',
+            					ParameterValue: "m1.small",
+            				},
 				{
 					ParameterKey: 'k8sMinNodeSizeParameter',
 					ParameterValue: "2",
