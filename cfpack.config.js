@@ -19,7 +19,7 @@ module.exports = {
 			Parameters: [
 							{
             					ParameterKey: 'InstanceTypeParameter',
-            					ParameterValue: "m1.small",
+            					ParameterValue: "t3a.medium",
             				},
 				{
 					ParameterKey: 'k8sMinNodeSizeParameter',

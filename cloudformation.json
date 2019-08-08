@@ -428,8 +428,7 @@
             "Default": "t2.micro",
             "AllowedValues": [
                 "t2.micro",
-                "m1.small",
-                "m1.large"
+                "t3a.medium"
             ],
             "Description": "Enter t2.micro, m1.small, or m1.large. Default is t2.micro."
         },
