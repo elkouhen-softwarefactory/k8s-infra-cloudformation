@@ -1,4 +1,12 @@
 Resources:
+
+  bastionInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+        - bastion
+
   bastion:
     Type: AWS::EC2::Instance
     Metadata:
@@ -34,9 +42,10 @@ Resources:
               owner: "ec2-user"
               group: "ec2-user"
     Properties:
-      InstanceType: !Ref InstanceTypeParameter
+      InstanceType:  "t2.micro"
       ImageId: "ami-0c6b1d09930fac512"
       KeyName: !Ref keynameParameter
+      IamInstanceProfile: !Ref bastionInstanceProfile
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0
@@ -53,7 +62,7 @@ Resources:
           yum install -y python-pip git
           pip install ansible boto boto3 botocore
           git clone https://github.com/elkouhen/k8s-deploy.git /home/ec2-user/k8s-deploy
-          cd /home/ec2-user/k8s-deploy; git checkout aws
+          cd /home/ec2-user/k8s-deploy; git checkout develop
           chown -R ec2-user /home/ec2-user/k8s-deploy
           /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion --region ${AWS::Region}
           /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion --region ${AWS::Region}

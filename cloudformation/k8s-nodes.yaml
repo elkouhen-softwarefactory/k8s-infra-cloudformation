@@ -1,5 +1,5 @@
 Resources:
-  InstanceProfile:
+  k8sInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Path: "/"
@@ -13,9 +13,15 @@ Resources:
       InstanceType: !Ref InstanceTypeParameter
       ImageId: "ami-0c6b1d09930fac512"
       KeyName: !Ref keynameParameter
-      IamInstanceProfile: !Ref InstanceProfile
+      IamInstanceProfile: !Ref k8sInstanceProfile
       SecurityGroupIds:
         - !Ref privateSubnet1SecurityGroup
+      UserData:
+        Fn::Base64:
+          !Sub |
+          #!/bin/bash -xe
+          /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource bastion --region ${AWS::Region}
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource bastion --region ${AWS::Region}
       Tags:
         - Key: Name
           Value: Master
